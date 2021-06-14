@@ -1,0 +1,13 @@
+body {
+    background-color: #d7dadf;
+}
+
+.btn-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.hidden {
+    display: none;
+}

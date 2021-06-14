@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {% for post in posts %}
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <div class="media">
+                    <a href="{%  url 'profile' username=post.user.username %}">
+                        <img class="d-flex mr-3 rounded-circle" src="{{ post.user.profile_pic.url }}" alt="" height="60" width="60">
+                    </a>
+                    <div class="media-body">
+                        <div class="row">
+                            <div class="col-10">
+                                <p class="mt-2 mb-0"><a href="{%  url 'profile' username=post.user.username %}" class="text-dark"><strong>{{ post.user.get_full_name }}</strong></a></p>
+                                <p class="font-small text-muted">{{ post.updated_date|date:'d M Y' }}</p>
+                            </div>
+                            <div class="col-2">
+                                {% if user.is_authenticated and post.user == user %}
+                                <div class="dropdown float-right">
+                                    <button class="btn btn btn-link p-1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v text-primary"></i></button>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-primary">
+                                        <a class="dropdown-item" href="{% url 'edit_post' id=post.id %}">Edit</a>
+                                        <a class="dropdown-item" href="{% url 'delete_post' id=post.id %}">Delete</a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ post.content}}</p>
+                {% if post.picture %}
+                <div id="mdb-lightbox-ui"></div>
+                <div class="mdb-lightbox">
+                    <figure>
+                        <a href="{{ post.picture.url }}"  data-size="1600x1067">
+                            <img src="{{ post.picture.url }}" class="img-responsive mt-2" height="100%" width="100%" alt="post_image">
+                        </a>
+                        <figcaption>{{ post.content}}</figcaption>
+                    </figure>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                {% if not user.is_authenticated %}
+                    <a type="button" data-toggle="modal" data-target="#like-login-modal"><i class="far fa-heart text-danger mr-2"></i></a>
+                    <div class="modal fade" id="like-login-modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+                            <div class="modal-content text-center">
+                                <div class="modal-header d-flex justify-content-center">
+                                    <p class="heading">Please login to Like!</p>
+                                </div>
+                                <div class="modal-body">
+                                    <i class="fas fa-info-circle fa-4x animated rotateIn"></i>
+                                </div>
+                                <div class="modal-footer flex-center">
+                                    <a href="{% url 'login' %}" class="btn btn-outline-danger btn-md">Login</a>
+                                    <a type="button" class="btn btn-danger waves-effect btn-md" data-dismiss="modal">No</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if user in post.get_likes %}
+                    <a class="like-btn fas fa-heart text-danger mr-2" data-post-id="{{ post.id }}" id="like-btn-{{ post.id }}"></a>
+                    {% else %}
+                    <a class="like-btn far fa-heart text-danger mr-2" data-post-id="{{ post.id }}" id="like-btn-{{ post.id }}"></a>
+                    {% endif %}
+                {% endif %}
+                <span class="font-small text-muted"><span class="like-count-{{ post.id }}">{{ post.get_likes_count }}</span> Likes</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="sticky-top" style="top:90px;">
+            {% include 'posts/sideblock.html' %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

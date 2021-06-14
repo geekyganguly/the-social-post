@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-5">
+            <div class="card-body">
+                <div class="row p-2">
+                    <div class="col-md-4 text-center mb-5 mb-md-0">
+                        <img src="{{ user_profile.profile_pic.url }}" class="rounded" alt="avatar" height="200" width="200">
+                    </div>
+                    <div class="col-md-8 text-center text-md-left">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h4 class="card-title"><strong>{{ user_profile.get_full_name }}</strong></h4>
+                            </div>
+                            <div class="col-lg-6">
+                                {% if user.is_authenticated and user.username != user_profile.username %}
+                                    {% if user in user_profile.connection.all %}
+                                    <a class="connect-btn btn btn-primary btn-sm float-md-right" id="connect-btn" data-connect-url="{% url 'connect_user' %}" data-connect-id="{{ user_profile.id }}"><strong>Connected</strong></a>
+                                    {% else %}
+                                    <a class="connect-btn btn btn-danger btn-sm float-md-right" id="connect-btn" data-connect-url="{% url 'connect_user' %}" data-connect-id="{{ user_profile.id }}"><strong>Add Connection</strong></a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <a href="#connection"><span id="connection-count-{{ user_profile.id }}">{{ user_profile.connection.count }}</span> Connections</a>
+                        <hr class="mt-1">
+                        <p class="text-muted">{{ user_profile.bio }}</p>
+                        {% if user.is_authenticated and user_profile.username == user.username %}
+                            <button class="btn btn-primary btn-sm m-0" data-toggle="modal" data-target="#edit-profile"><strong>Edit Profile</strong></button>
+                            <div class="modal fade" id="edit-profile" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <form method="POST" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                {% load widget_tweaks %}
+                                                <div class="md-form md-outline mb-3">
+                                                    {% render_field form.name|add_error_class:"is-invalid" class="form-control" %}
+                                                    <label for="{{ form.name.id_for_label }}">Full Name</label>
+                                                    {% for error in form.errors.name %}
+                                                    <div class="invalid-feedback">{{ error }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="md-form md-outline mb-3">
+                                                    {% render_field form.bio|add_error_class:"is-invalid" class="form-control" %}
+                                                    <label for="{{ form.bio.id_for_label }}">Bio</label>
+                                                    {% for error in form.errors.bio %}
+                                                    <div class="invalid-feedback">{{ error }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="md-form md-outline mb-3">
+                                                    {% render_field form.phone|add_error_class:"is-invalid" class="form-control" %}
+                                                    <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                                                    {% for error in form.errors.phone %}
+                                                    <div class="invalid-feedback">{{ error }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="md-form md-outline mb-3">
+                                                    {% render_field form.email|add_error_class:"is-invalid" class="form-control" %}
+                                                    <label for="{{ form.email.id_for_label }}">Email Address</label>
+                                                    {% for error in form.errors.email %}
+                                                    <div class="invalid-feedback">{{ error }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                                <!-- <label class="text-primary mt-2"><strong>Profile Pic</strong></label><br> -->
+                                                {% render_field form.profile_pic %}
+                                                
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger btn-md" data-dismiss="modal"><strong>Cancel</strong></button>
+                                            <button type="submit" class="btn btn-outline-primary btn-md"><strong>Update Profile</strong></button>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h4 class="font-weight-bold"><strong>ALL POSTS</strong></h4>
+        <hr class="blue">
+        {% for post in posts %}
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <div class="media">
+                    <a href="{%  url 'profile' username=post.user.username %}">
+                        <img class="d-flex mr-3 rounded-circle" src="{{ post.user.profile_pic.url }}" alt="" height="60" width="60">
+                    </a>
+                    <div class="media-body">
+                        <div class="row">
+                            <div class="col-10">
+                                <p class="mt-2 mb-0"><a href="{%  url 'profile' username=post.user.username %}" class="text-dark"><strong>{{ post.user.get_full_name }}</strong></a></p>
+                                <p class="font-small text-muted">{{ post.updated_date|date:'d M Y' }}</p>
+                            </div>
+                            <div class="col-2">
+                                {% if user.is_authenticated and post.user == user %}
+                                <div class="dropdown float-right">
+                                    <button class="btn btn btn-link p-1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v text-primary"></i></button>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-primary">
+                                        <a class="dropdown-item" href="{% url 'edit_post' id=post.id %}">Edit</a>
+                                        <a class="dropdown-item" href="{% url 'delete_post' id=post.id %}">Delete</a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ post.content}}</p>
+                {% if post.picture %}
+                <div id="mdb-lightbox-ui"></div>
+                <div class="mdb-lightbox">
+                    <figure>
+                        <a href="{{ post.picture.url }}"  data-size="1600x1067">
+                            <img src="{{ post.picture.url }}" class="img-responsive mt-2" height="100%" width="100%" alt="post_image">
+                        </a>
+                        <figcaption>{{ post.content}}</figcaption>
+                    </figure>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                {% if not user.is_authenticated %}
+                    <a type="button" data-toggle="modal" data-target="#like-login-modal"><i class="far fa-heart text-danger mr-2"></i></a>
+                    <div class="modal fade" id="like-login-modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+                            <div class="modal-content text-center">
+                                <div class="modal-header d-flex justify-content-center">
+                                    <p class="heading">Please login to Like!</p>
+                                </div>
+                                <div class="modal-body">
+                                    <i class="fas fa-info-circle fa-4x animated rotateIn"></i>
+                                </div>
+                                <div class="modal-footer flex-center">
+                                    <a href="{% url 'login' %}" class="btn btn-outline-danger btn-md">Login</a>
+                                    <a type="button" class="btn btn-danger waves-effect btn-md" data-dismiss="modal">No</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if user in post.get_likes %}
+                    <a class="like-btn fas fa-heart text-danger mr-2" data-post-id="{{ post.id }}" id="like-btn-{{ post.id }}"></a>
+                    {% else %}
+                    <a class="like-btn far fa-heart text-danger mr-2" data-post-id="{{ post.id }}" id="like-btn-{{ post.id }}"></a>
+                    {% endif %}
+                {% endif %}
+                <span class="font-small text-muted"><span class="like-count-{{ post.id }}">{{ post.get_likes_count }}</span> Likes</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-md-4">
+        <div class="sticky-top" style="top:90px;">
+            <div class="card mb-4" id="connection">
+                <div class="card-header bg-primary">
+                    <h5 class="white-text mb-0 py-1"><strong>Connections</strong></h5>
+                </div>
+                <div class="card-body">
+                    {% for connection in profile_connections %}
+                        <a href="{% url 'profile' username=connection.username %}">
+                            <div class="media">
+                                <img class="d-flex mr-3 rounded-circle" src="{{ connection.profile_pic.url }}" alt="" height="60" width="60">
+                                <div class="media-body text-dark">
+                                    <p class="mt-2 mb-0"><strong>{{ connection.get_full_name }}</strong></p>
+                                    <p class="mb-0 font-small text-muted">{{ connection.connection.count }} Connection</p>
+                                </div>
+                            </div>
+                        </a>
+                        <hr class="blue">
+                    {% endfor %}                    
+                </div>
+            </div>
+            
+            {% if user.is_authenticated and user.username != user_profile.username %}
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h5 class="white-text mb-0 py-1"><strong>Mutual Connections</strong></h5>
+                    </div>
+                    <div class="card-body">
+                        {% for connection in mutual_connections %}
+                            <a href="{% url 'profile' username=connection.username %}">
+                                <div class="media">
+                                    <img class="d-flex mr-3 rounded-circle" src="{{ connection.profile_pic.url }}" alt="" height="60" width="60">
+                                    <div class="media-body text-dark">
+                                        <p class="mt-2 mb-0"><strong>{{ connection.get_full_name }}</strong></p>
+                                        <p class="mb-0 font-small text-muted">{{ connection.connection.count }} Connection</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <hr class="blue">
+                        {% endfor %}  
+                    </div>
+                </div>
+            {% endif %}            
+        </div>
+    </div>
+</div>
+{% endblock content %}

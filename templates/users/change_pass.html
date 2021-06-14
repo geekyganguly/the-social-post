@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 mx-auto mt-1">
+        <div class="card">
+            <div class="card-header h4 white-text primary-color text-center py-4">
+                <strong>Change Password</strong>
+            </div>
+            <div class="card-body">
+                <form method='POST'>
+                    {% csrf_token %}
+                    {% load widget_tweaks %}
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.current_password|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.current_password.id_for_label }}">Current Password</label>
+                        {% for error in form.errors.current_password %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.password|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.password.id_for_label }}">New Password</label>
+                        {% for error in form.errors.password %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.cnf_password|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.cnf_password.id_for_label }}">Confirm New Password</label>
+                        {% for error in form.errors.cnf_password %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-12 text-center my-4">
+                        <input type="submit" value="Change Password" class="btn btn-primary btn-rounded btn-md">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

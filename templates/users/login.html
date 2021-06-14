@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row">
+    <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 mx-auto mt-1">
+        <div class="card">
+            <div class="card-header white-text primary-color text-center py-4">
+                <h4><strong><i class="fas fa-user mr-3"></i>Log in</strong></h4>
+            </div> 
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% load widget_tweaks %}
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.phone|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                        {% for error in form.errors.phone %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.password|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.password.id_for_label }}">Password</label>
+                        {% for error in form.errors.password %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-4 mb-4">
+                        <button class="btn btn-outline-primary"><strong>Log in <i class="fas fa-sign-in-alt ml-1"></i></strong></button>
+                    </div>
+                </form>
+                <hr>
+                <div class="text-muted text-center mt-1">
+                    <p>Not a member? <a href="{% url 'register' %}" class="blue-text">Sign Up</a></p>
+                    <!-- <p>Forgot <a class="text-primary" href="#">Password?</a></p> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+      
+{% endblock %}

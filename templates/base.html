@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if title%}
+        <title>The Social Post - {{ title }}</title>
+    {% else %}
+        <title>The Social Post</title>
+    {% endif %}
+    <!-- favicon icon -->
+    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mdb.css' %}">
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <!--Navbar -->
+        <nav class="navbar fixed-top navbar-dark primary-color font-weight-bold">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'index' %}">The Social Post</a>
+                
+                    <ul class="navbar-nav ml-auto nav-flex-icons">
+                        <li class="nav-item m-auto">
+                            <a class="nav-link px-2" data-toggle="modal" data-target="#search-modal">
+                                <i class="fas fa-search text-white" style="font-size:16px"></i>
+                            </a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item mx-2 d-none d-sm-block">
+                            <a href="{% url 'new_post' %}" class="nav-link btn btn-outline-light btn-rounded btn-sm px-3">
+                                <strong><i class="fas fa-plus mr-2"></i>New Post</strong>
+                            </a>
+                        </li>
+                        <li class="nav-item d-block d-sm-none">
+                            <a href="{% url 'new_post' %}" class="nav-link">
+                                <i class="fas fa-plus" style="font-size:16px"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle px-2" id="userDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="{{ user.profile_pic.url }}" height="25" width="25" class="rounded-circle z-depth-0" alt="avatar image">
+                            </a>
+                            <div class="dropdown-menu  dropdown-menu-right dropdown-primary" aria-labelledby="userDropdownMenuLink">
+                                <a class="dropdown-item font-weight-bold" href="{% url 'profile' username=user.username %}">My Profile</a>
+                                <a class="dropdown-item font-weight-bold" href="{% url 'change_password' %}">Change Password</a>
+                                <a class="dropdown-item font-weight-bold" href="{% url 'logout' %}">Log out</a>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link px-2" href="{% url 'login' %}">Log In</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                
+            </div>
+        </nav>
+        <!--/.Navbar -->
+    </header>
+    <!-- Header -->
+
+    <!--Main Layout-->
+    <main>
+        <div class="container mt-5 pt-5 mb-5" id="container">
+            {% include 'search.html' %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+    <!--Main Layout-->
+
+    <footer class="page-footer bg-primary">  
+        <div class="footer-copyright text-center py-3">
+            <div class="container-fluid font-small font-weight-bold white-text">
+                Made with <i class="fas fa-heart"></i> by <a href="https://www.sauravganguly.in/" target="_blank">Saurav64bit</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- Popper JS -->
+    <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="{% static 'js/mdb.js' %}"></script>
+    <!-- Custom scripts -->
+    <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+    
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success'%}
+                <script type=text/javascript>toastr.{{ message.tags }}('{{ message }}')</script>
+            {% elif message.tags == 'info' %}
+                <script type=text/javascript>toastr.{{ message.tags }}('{{ message }}')</script>
+            {% elif message.tags == 'warning' %}
+                <script type=text/javascript>toastr.{{ message.tags }}('{{ message }}')</script>
+            {% elif message.tags == 'error' %}
+                <script type=text/javascript>toastr.{{ message.tags }}('{{ message }}')</script>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

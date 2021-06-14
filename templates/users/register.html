@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row">
+    <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12 mx-auto mt-1">
+        <div class="card">
+            <div class="card-header h4 white-text primary-color text-center py-4">
+                <strong><i class="fas fa-user-plus mr-3"></i>Register</strong>
+            </div> 
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% load widget_tweaks %}
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.name|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.name.id_for_label }}">Full Name</label>
+                        {% for error in form.errors.name %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.phone|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                        {% for error in form.errors.phone %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.email|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.email.id_for_label }}">Email Address</label>
+                        {% for error in form.errors.email %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="md-form md-outline mb-3">
+                        {% render_field form.password|add_error_class:"is-invalid" class="form-control" %}
+                        <label for="{{ form.password.id_for_label }}">Password</label>
+                        {% for error in form.errors.password %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-4 mb-4">
+                        <button class="btn btn-outline-primary" type="submit"><strong>Sign up <i class="fas fa-sign-in-alt ml-1"></i></strong></button>
+                    </div>
+                </form>
+                <hr>
+                <div class="text-muted text-center mt-1">
+                    <p class="pt-1">Already have an account? <a href="{% url 'login' %}" class="blue-text">Log In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+      
+{% endblock %}
