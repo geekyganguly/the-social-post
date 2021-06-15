@@ -45,6 +45,11 @@ def index(request):
 
 @ login_required
 def new_post(request):
+    all_users = User.objects.all().exclude(id=request.user.id)
+    connections = [user for user in request.user.connection.all()]
+    non_connections = [
+        user for user in all_users if user not in connections]
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -61,6 +66,7 @@ def new_post(request):
     else:
         form = PostForm()
     context = {
+        'users': non_connections,
         'form': form,
     }
     return render(request, 'posts/new_post.html', context=context)
@@ -68,6 +74,10 @@ def new_post(request):
 
 @login_required
 def edit_post(request, id):
+    all_users = User.objects.all().exclude(id=request.user.id)
+    connections = [user for user in request.user.connection.all()]
+    non_connections = [
+        user for user in all_users if user not in connections]
     post = Post.objects.filter(id=id).first()
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -89,6 +99,7 @@ def edit_post(request, id):
         }
         form = PostForm(initial=form_data)
     context = {
+        'users': non_connections,
         'form': form,
     }
     return render(request, 'posts/edit_post.html', context=context)

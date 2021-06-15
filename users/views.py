@@ -27,7 +27,10 @@ def login_user(request):
                 login(request, user)
                 messages.success(
                     request, 'Logged in.')
-                return redirect('index')
+                if request.GET.get('next'):
+                    return redirect(request.GET.get('next'))
+                else:
+                    return redirect('index')
             else:
                 messages.error(
                     request, "Account not found!.")
